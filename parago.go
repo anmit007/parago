@@ -107,3 +107,32 @@ outer:
 	}
 	return results, errs
 }
+
+func Filter[T any](input []T, fn func(T) (bool, error), opts ...Option) ([]T, []error) {
+	var filtered []T
+	results, errs := Map(input, func(t T) (T, error) {
+		keep, err := fn(t)
+		if keep {
+			return t, err
+		}
+		return *new(T), err
+	}, opts...)
+	for _, v := range results {
+		if !isZero(v) {
+			filtered = append(filtered, v)
+		}
+	}
+	return filtered, errs
+}
+
+func ForEach[T any](input []T, fn func(T) error, opts ...Option) []error {
+	_, errs := Map(input, func(t T) (struct{}, error) {
+		return struct{}{}, fn(t)
+	}, opts...)
+	return errs
+}
+
+func isZero[T any](v T) bool {
+	var zero T
+	return any(v) == any(zero)
+}
