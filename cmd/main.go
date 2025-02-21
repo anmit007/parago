@@ -35,7 +35,7 @@ func ParallelProcess(input []int) ([]int, []error) {
 			}
 			return int(result), nil
 		},
-		parago.WithWorkers(10),
+		parago.WithWorkers(10000),
 		parago.WithContext(ctx),
 	)
 }
