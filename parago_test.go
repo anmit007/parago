@@ -1,6 +1,7 @@
 package parago
 
 import (
+	"errors"
 	"runtime"
 	"sync"
 	"sync/atomic"
@@ -61,5 +62,34 @@ func TestGoroutineCount(t *testing.T) {
 
 	if finalGoroutines != initialGoroutines {
 		t.Errorf("Expected %d goroutines after cleanup, got %d", initialGoroutines, finalGoroutines)
+	}
+}
+
+func TestMap(t *testing.T) {
+	input := []int{1, 2, 3}
+	results, errs := Map(input, func(x int) (int, error) {
+		return x * 2, nil
+	}, WithWorkers(2))
+	if len(errs) > 0 {
+		t.Fatalf("Unexpected Errors: %v", errs)
+	}
+	expected := []int{2, 4, 6}
+	for i, v := range results {
+		if v != expected[i] {
+			t.Errorf("Expected %v, got %v", expected, results)
+		}
+	}
+}
+
+func TestErrorHandling(t *testing.T) {
+	input := []int{1, 2, 3}
+	_, errs := Map(input, func(x int) (int, error) {
+		if x == 2 {
+			return 0, errors.New("test error")
+		}
+		return x, nil
+	})
+	if len(errs) != 1 || errs[0].Error() != "test error" {
+		t.Errorf("expected 1 error, got %v", errs)
 	}
 }
