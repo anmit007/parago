@@ -63,8 +63,9 @@ Key characteristics include:
 ## Installation
 
 To install Parago, run:
-bash
+```bash
 go get github.com/anmit007/parago
+```
 
 > **Note:** Make sure you are using Go 1.18 or later to leverage generics.
 
