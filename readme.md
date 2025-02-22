@@ -76,21 +76,26 @@ Below is a quick example demonstrating how to use the `Map` function to double e
 
 ``` go
 package main
+
 import (
 "fmt"
 "log"
 "github.com/anmit007/parago"
 )
+
 func main() {
+
 input := []int{1, 2, 3, 4, 5}
 results, errs := parago.Map(input, func(x int) (int, error) {
 return x 2, nil
 }, parago.WithWorkers(3))
+
 if len(errs) > 0 {
 log.Fatalf("errors: %v", errs)
 }
 fmt.Println("Doubled numbers:", results)
 }
+
 ```
 
 ---
@@ -126,18 +131,20 @@ The `Map` function concurrently applies a provided transformation to each elemen
 
 **Signature:**
 
-\[
-\texttt{func Map[T any, R any](input []T, fn func(T) (R, error), opts \ldots Option) ([]R, []error)}
-\]
+```go
+func Map[T any, R any](input []T, fn func(T) (R, error), opts ...Option) ([]R, []error)
+```
 
-- **Parameters:**
-  - \(\texttt{input []T}\): The input slice.
-  - \(\texttt{fn func(T) (R, error)}\): The transformation function.
-  - \(\texttt{opts \ldots Option}\): Variadic options for configuration.
+**Parameters:**
 
-- **Returns:**
-  - \(\texttt{[]R}\): A slice of results in order.
-  - \(\texttt{[]error}\): A slice of any errors encountered.
+- `input []T`: The input slice.
+- `fn func(T) (R, error)`: The transformation function.
+- `opts ...Option`: Variadic options for configuration.
+
+**Returns:**
+
+- `[]R`: A slice of results in order.
+- `[]error`: A slice of any errors encountered.
 
 ### Filter
 
@@ -147,9 +154,9 @@ The `Filter` function concurrently evaluates a predicate for each element and re
 
 **Signature:**
 
-\[
-\texttt{func Filter[T any](input []T, fn func(T) (bool, error), opts \ldots Option) ([]T, []error)}
-\]
+```go
+func Filter[T any](input []T, fn func(T) (bool, error), opts ...Option) ([]T, []error)
+```
 
 > **Note:** Internally, this function uses `Map` to process the filtering logic.
 
@@ -159,12 +166,13 @@ The `ForEach` function runs a provided function on each element of the input sli
 
 **Signature:**
 
-\[
-\texttt{func ForEach[T any](input []T, fn func(T) error, opts \ldots Option) []error}
-\]
+```go
+func ForEach[T any](input []T, fn func(T) error, opts ...Option) []error
+```
 
-- **Returns:**
-  - A slice of errors (if any) encountered during processing.
+**Returns:**
+
+- A slice of errors (if any) encountered during processing.
 
 ---
 
