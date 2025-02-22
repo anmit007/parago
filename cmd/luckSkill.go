@@ -25,11 +25,11 @@ type candidate struct {
 
 func LuckOrSkill() {
 	start := time.Now()
-	source := rand.NewSource(time.Now().UnixNano())
 	results, errs := parago.Map(
 		make([]int, trials),
 		func(_ int) (int, error) {
-			return processTrial(source), nil
+			seed := time.Now().UnixNano() + int64(rand.Intn(1000000))
+			return processTrial(rand.NewSource(seed)), nil
 		},
 		parago.WithWorkers(10),
 		parago.WithContext(context.Background()),
