@@ -1,4 +1,4 @@
-# Parago
+# Parago [![GoDoc](https://img.shields.io/badge/go-documentation-blue.svg?style=flat-square)](https://pkg.go.dev/github.com/anmit007/parago)
 
 Parago is a lightweight concurrent processing library written in Go. It leverages Go's goroutines, channels, and generics (introduced in Go 1.18) to provide flexible utilities for parallelizing computations over slices. With a simple and expressive API, Parago enables you to perform common operations such as mapping, filtering, and iterating concurrently while offering configurable control over worker pools, context-based cancellation, and error handling.
 
