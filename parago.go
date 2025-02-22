@@ -7,9 +7,9 @@ import (
 )
 
 type Config struct {
-	workers  int
-	ctx      context.Context
-	failFast bool
+	Workers  int
+	Ctx      context.Context
+	FailFast bool
 }
 
 type Option func(*Config)
@@ -17,20 +17,20 @@ type Option func(*Config)
 func WithWorkers(n int) Option {
 	return func(c *Config) {
 		if n > 0 {
-			c.workers = n
+			c.Workers = n
 		}
 	}
 }
 
 func WithContext(ctx context.Context) Option {
 	return func(c *Config) {
-		c.ctx = ctx
+		c.Ctx = ctx
 	}
 }
 
 func WithFailFast() Option {
 	return func(c *Config) {
-		c.failFast = true
+		c.FailFast = true
 	}
 }
 
@@ -41,15 +41,15 @@ type result[T any] struct {
 }
 
 func Map[T any, R any](input []T, fn func(T) (R, error), opts ...Option) ([]R, []error) {
-	cfg := &Config{workers: len(input)}
+	cfg := &Config{Workers: len(input)}
 	for _, opt := range opts {
 		opt(cfg)
 	}
 
-	if cfg.ctx == nil {
-		cfg.ctx = context.Background()
+	if cfg.Ctx == nil {
+		cfg.Ctx = context.Background()
 	}
-	_, cancel := context.WithCancel(cfg.ctx)
+	_, cancel := context.WithCancel(cfg.Ctx)
 	defer cancel()
 	inputChan := make(chan int, len(input))
 	resultChan := make(chan result[R], len(input))
@@ -58,12 +58,12 @@ func Map[T any, R any](input []T, fn func(T) (R, error), opts ...Option) ([]R, [
 	var errs []error
 	var errMutex sync.Mutex
 
-	for i := 0; i < cfg.workers; i++ {
+	for i := 0; i < cfg.Workers; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			for index := range inputChan {
-				if cfg.ctx != nil && cfg.ctx.Err() != nil {
+				if cfg.Ctx != nil && cfg.Ctx.Err() != nil {
 					return
 				}
 				var r result[R]
@@ -77,7 +77,7 @@ func Map[T any, R any](input []T, fn func(T) (R, error), opts ...Option) ([]R, [
 				}()
 				r.index = index
 				resultChan <- r
-				if r.err != nil && cfg.failFast {
+				if r.err != nil && cfg.FailFast {
 					cancel()
 					return
 				}
@@ -87,7 +87,7 @@ func Map[T any, R any](input []T, fn func(T) (R, error), opts ...Option) ([]R, [
 outer:
 	for i := range input {
 		select {
-		case <-cfg.ctx.Done():
+		case <-cfg.Ctx.Done():
 			break outer
 		default:
 			inputChan <- i
